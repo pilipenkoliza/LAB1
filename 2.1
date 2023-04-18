@@ -1,0 +1,49 @@
+#include <iostream>
+#include <vector>
+#include <typeinfo>
+
+using namespace std;
+
+class Class1 {
+public:
+	virtual void inf() {
+		cout << "Class1" << endl;
+	}
+	~Class1(){}
+};
+
+class Class2 : public Class1 {
+public:
+	virtual void inf() {
+		cout << "Class2" << endl;
+	}
+	~Class2(){}
+};
+
+void my_copy(Class1* obj, vector<Class1*>& v) {
+	Class1* copy = 0;
+	if (dynamic_cast<Class2*>(obj)) {
+		copy = new Class2(*dynamic_cast<Class2*>(obj));
+	}
+	else {
+		copy = new Class1(*dynamic_cast<Class1*>(obj));
+	}
+	v.push_back(copy);
+}
+
+int main() {
+	Class1 obj1;
+	Class2 obj2;
+
+	vector<Class1*> v;
+
+	my_copy(&obj1, v);
+	my_copy(&obj2, v);
+
+	for (vector<Class1*>::iterator i = v.begin(); i != v.end(); ++i) {
+		cout << typeid(**i).name() << endl;
+		delete* i;
+	}
+
+	return 0;
+}
